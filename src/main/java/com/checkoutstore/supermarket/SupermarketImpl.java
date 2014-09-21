@@ -29,6 +29,9 @@ public class SupermarketImpl implements Supermarket {
      */
     @Override
     public int checkout(String source) {
+        if (source == null || source.length() == 0) {
+            return 0;
+        }
         List<Character> tokens = createTokenList(source);
         List<Item> items = tokens.stream()
                 .map(itemLookup::lookupItem)
@@ -45,6 +48,13 @@ public class SupermarketImpl implements Supermarket {
             return currentTotal;
         }
 
+        currentTotal = applyBulkDiscount(currentTotal, items, itemsWithDiscount);
+
+        return currentTotal;
+    }
+
+    /** Reduces total by applying discounts for bulk purchase */
+    int applyBulkDiscount(int currentTotal, List<Item> items, List<Item> itemsWithDiscount) {
         Map<Item, BulkDiscount> discounts = new HashMap<>();
         for (Item item : itemsWithDiscount) {
             discounts.put(item, item.getBulkDiscount());
@@ -58,7 +68,6 @@ public class SupermarketImpl implements Supermarket {
             currentTotal -= timesDiscounted * bulkDiscount.getNormalPrice();
             currentTotal += timesDiscounted * bulkDiscount.getDiscountPrice();
         }
-
         return currentTotal;
     }
 
@@ -73,7 +82,7 @@ public class SupermarketImpl implements Supermarket {
     }
 
     /** Get total price by adding all item prices */
-    private int addItemPrices(List<Item> items) {
+    int addItemPrices(List<Item> items) {
         int currentTotal = 0;
         for (Item item : items) {
             currentTotal += item.getPrice();
@@ -82,7 +91,7 @@ public class SupermarketImpl implements Supermarket {
     }
 
     /** Convert String into List of Characters */
-    private List<Character> createTokenList(String source) {
+    List<Character> createTokenList(String source) {
         char[] chars = source.trim().toUpperCase().toCharArray();
         Character[] boxChars = asBoxedArray(chars);
         List<Character> characters = new ArrayList<>(Arrays.asList(boxChars));
