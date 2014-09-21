@@ -83,10 +83,9 @@ public class SupermarketImpl implements Supermarket {
 
     /** Get total price by adding all item prices */
     int addItemPrices(List<Item> items) {
-        int currentTotal = 0;
-        for (Item item : items) {
-            currentTotal += item.getPrice();
-        }
+        int currentTotal = items.stream()
+                .mapToInt(Item::getPrice)
+                .sum();
         return currentTotal;
     }
 
