@@ -9,7 +9,7 @@ import java.util.Objects;
  */
 public class Item {
 
-    private char identifier;
+    private final char identifier;
     private final int price;
     private final BulkDiscount bulkDiscount;
 
