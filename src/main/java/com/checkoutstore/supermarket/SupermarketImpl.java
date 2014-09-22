@@ -73,11 +73,7 @@ public class SupermarketImpl implements Supermarket {
 
     /** Calculate the number of times a number is divisible by another */
     long calcTimesDivisible(long numerator, long denominator) {
-        long timesDivisible = 0;
-        while (numerator >= denominator) {
-            numerator -= denominator;
-            timesDivisible++;
-        }
+        long timesDivisible = Math.floorDiv(numerator, denominator);
         return timesDivisible;
     }
 
