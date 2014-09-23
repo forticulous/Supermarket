@@ -4,8 +4,6 @@ import com.checkoutstore.item.BulkDiscount;
 import com.checkoutstore.item.Item;
 import com.checkoutstore.item.ItemLookup;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,18 +85,11 @@ public class SupermarketImpl implements Supermarket {
 
     /** Convert String into List of Characters */
     List<Character> createTokenList(String source) {
-        char[] chars = source.trim().toUpperCase().toCharArray();
-        Character[] boxChars = asBoxedArray(chars);
-        List<Character> characters = new ArrayList<>(Arrays.asList(boxChars));
-        return characters;
-    }
-
-    private Character[] asBoxedArray(char[] unboxed) {
-        Character[] boxed = new Character[unboxed.length];
-        for (int i = 0; i < unboxed.length; i++) {
-            boxed[i] = unboxed[i];
-        }
-        return boxed;
+        String sanitized = source.trim().toUpperCase();
+        List<Character> charList = sanitized.chars()
+                .mapToObj(i -> (char) i)
+                .collect(Collectors.toList());
+        return charList;
     }
 
 }
