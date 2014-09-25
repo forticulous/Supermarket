@@ -4,9 +4,7 @@ import com.checkoutstore.item.BulkDiscount;
 import com.checkoutstore.item.Item;
 import com.checkoutstore.item.ItemLookup;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -37,42 +35,34 @@ public class SupermarketImpl implements Supermarket {
 
         int currentTotal = addItemPrices(items);
 
-        List<Item> itemsWithDiscount = items.stream()
-                .filter(item -> item.getBulkDiscount() != null)
-                .collect(Collectors.toList());
-
         // Can stop here if there are no items with bulk discount
-        if (itemsWithDiscount.size() == 0) {
+        boolean noBulkDiscounts = items.stream()
+                .allMatch(item -> item.getBulkDiscount() == null);
+        if (noBulkDiscounts) {
             return currentTotal;
         }
 
-        currentTotal = applyBulkDiscount(currentTotal, items, itemsWithDiscount);
+        currentTotal = applyBulkDiscount(currentTotal, items);
 
         return currentTotal;
     }
 
     /** Reduces total by applying discounts for bulk purchase */
-    int applyBulkDiscount(int currentTotal, List<Item> items, List<Item> itemsWithDiscount) {
-        Map<Item, BulkDiscount> discounts = new HashMap<>();
-        for (Item item : itemsWithDiscount) {
-            discounts.put(item, item.getBulkDiscount());
-        }
-        for (Map.Entry<Item, BulkDiscount> entry : discounts.entrySet()) {
-            Item discountItem = entry.getKey();
-            BulkDiscount bulkDiscount = entry.getValue();
+    int applyBulkDiscount(int currentTotal, List<Item> items) {
+        List<Item> distinctBulkDiscountItems = items.stream()
+                .filter(item -> item.getBulkDiscount() != null)
+                .distinct()
+                .collect(Collectors.toList());
+
+        for (Item discountItem : distinctBulkDiscountItems) {
+            BulkDiscount bulkDiscount = discountItem.getBulkDiscount();
 
             long itemCount = items.stream().filter(item -> item.equals(discountItem)).count();
-            long timesDiscounted = calcTimesDivisible(itemCount, bulkDiscount.getQuantity());
+            long timesDiscounted = Math.floorDiv(itemCount, bulkDiscount.getQuantity());
             currentTotal -= timesDiscounted * bulkDiscount.getNormalPrice();
             currentTotal += timesDiscounted * bulkDiscount.getDiscountPrice();
         }
         return currentTotal;
-    }
-
-    /** Calculate the number of times a number is divisible by another */
-    long calcTimesDivisible(long numerator, long denominator) {
-        long timesDivisible = Math.floorDiv(numerator, denominator);
-        return timesDivisible;
     }
 
     /** Get total price by adding all item prices */

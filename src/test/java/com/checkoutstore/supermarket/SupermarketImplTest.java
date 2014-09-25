@@ -20,13 +20,6 @@ public class SupermarketImplTest {
     }
 
     @Test
-    public void calcTimesDivisibleTest() throws Exception {
-        assertEquals(0L, impl.calcTimesDivisible(2, 4));
-        assertEquals(1L, impl.calcTimesDivisible(4, 4));
-        assertEquals(2L, impl.calcTimesDivisible(11, 5));
-    }
-
-    @Test
     public void createTokenListTest() throws Exception {
         List<Character> expected = new ArrayList<>();
         expected.add('A');
@@ -69,10 +62,8 @@ public class SupermarketImplTest {
         items.add(it2);
         items.add(it3);
 
-        List<Item> discountedItems = new ArrayList<>(items);
-
         // Should not apply discount because the quantity is not high enough
-        assertEquals(0, impl.applyBulkDiscount(0, items, discountedItems));
+        assertEquals(0, impl.applyBulkDiscount(0, items));
     }
 
     @Test
@@ -88,10 +79,8 @@ public class SupermarketImplTest {
         items.add(it3);
         items.add(it4);
 
-        List<Item> discountedItems = new ArrayList<>(items);
-
         // discount should be applied twice
-        assertEquals(-2, impl.applyBulkDiscount(0, items, discountedItems));
+        assertEquals(-2, impl.applyBulkDiscount(0, items));
     }
 
 }
